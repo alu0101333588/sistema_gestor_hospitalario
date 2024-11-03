@@ -42,7 +42,9 @@
       <section class="hero">
         <h1>Especialistas en cuidarte</h1>
         <p>Cuidando tu salud con tecnología de vanguardia y atención personalizada</p>
-        <button>Portal del paciente</button>
+        <div class="d-grid gap-2 d-md-block">
+            <button class="btn btn-primary" type="button">Portal del paciente</button>
+        </div>
       </section>
   
       <!-- Services Section (Unidad de medicina interna y Urgencias) -->
@@ -74,7 +76,9 @@
       <section class="personal-health">
         <h2>Área personal de salud</h2>
         <p>Accede a cualquier hora del día para cuidar tu salud. En el Portal del Paciente tienes tu espacio personal privado y seguro en el que puedes solicitar y gestionar tus citas o consultar tus informes clínicos.</p>
-        <button>Regístrate ahora</button>
+        <div class="d-grid gap-2 d-md-block">
+            <button class="btn btn-primary" type="button">Regístrate ahora</button>
+        </div>
       </section>
   
       <!-- Footer (Pie de página) -->
