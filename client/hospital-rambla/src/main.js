@@ -3,9 +3,12 @@ import Vue from 'vue'
 // import vuetify from './plugins/vuetify'
 import VueRouter from 'vue-router';
 import Inicio from '../components/Inicio.vue';
+import router from './router'
 
 
-Vue.use(VueRouter);
+createApp(App).use(router).use(vuetify).mount('#app')
+
+// Vue.use(VueRouter);
 
 const routes = [
   {
