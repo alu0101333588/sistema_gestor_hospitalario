@@ -2,7 +2,7 @@ import Vue from 'vue'
 // import App from './App.vue'
 // import vuetify from './plugins/vuetify'
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+import Inicio from '../views/Inicio.vue';
 
 
 Vue.use(VueRouter);
@@ -10,8 +10,8 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'Inicio',
+    component: Inicio,
   },
   // Otras rutas pueden ir aquí
 ];
