@@ -2,7 +2,7 @@ import Vue from 'vue'
 // import App from './App.vue'
 // import vuetify from './plugins/vuetify'
 import VueRouter from 'vue-router';
-import Inicio from '../views/Inicio.vue';
+import Inicio from '../components/Inicio.vue';
 
 
 Vue.use(VueRouter);
