@@ -51,13 +51,13 @@ body {
 
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import Inicio from './components/Inicio';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    Inicio,
   },
 
   data: () => ({
