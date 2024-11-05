@@ -97,6 +97,7 @@ export default {
         role: 'admin',
       },
       editarUsuarioId: null,
+      intervalId: null, // Variable para almacenar el ID del intervalo
     };
   },
   methods: {
@@ -153,10 +154,19 @@ export default {
     }
   },
   mounted() {
+    // Llama a la función de obtener usuarios una vez al montar el componente
     this.obtenerUsuarios();
+    
+    // Establece un intervalo para actualizar la lista de usuarios cada 10 segundos
+    this.intervalId = setInterval(this.obtenerUsuarios, 10000); // 10000 ms = 10 segundos
+  },
+  beforeDestroy() {
+    // Limpia el intervalo cuando el componente se destruye para evitar fugas de memoria
+    clearInterval(this.intervalId);
   }
 };
 </script>
+
 
 <style scoped>
 .creacion-usuarios {
