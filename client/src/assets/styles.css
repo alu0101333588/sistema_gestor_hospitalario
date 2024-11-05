@@ -1,5 +1,5 @@
 /* Importar fuente de letra desde Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Sedgwick+Ave&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 /* Definición de variables globales de colores */
 :root {
@@ -11,7 +11,7 @@
   --color-rojo: #e7c2d4;
   --color-gris: #e1e1e1;
   --success-color: #28a745;
-  --warning-color: #ffc107;
+  --warning-color: #ff914d;
   --error-color: #dc3545;
 }
 
@@ -21,19 +21,19 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: var(--background-color);
 }
 
 /* Estilos de componentes */
 .header {
-  font-family: 'Outfit', sans-serif;
   display: flex;
   justify-content: space-between;
   padding: 1rem 2rem;
   background-color: var(--background-color);
+  color: var(--primary-color);
 }
 
 .hero {
-  font-family: 'Outfit', sans-serif;
   background-color: var(--primary-color);
   color: #fff;
   padding: 2rem;
@@ -41,27 +41,26 @@ body {
 }
 
 .services {
-  font-family: 'Outfit', sans-serif;
   display: flex;
   justify-content: space-around;
   padding: 2rem;
+  color: var(--primary-color);
 }
 
 .insurers {
-  font-family: 'Outfit', sans-serif;
   text-align: center;
   padding: 1rem;
+  color: var(--primary-color);
 }
 
 .personal-health {
-  font-family: 'Outfit', sans-serif;
-  background-color: #e0f7ff;
+  background-color: var(--color-azul2);
   text-align: center;
   padding: 2rem;
+  color: var(--primary-color);
 }
 
 .footer {
-  font-family: 'Outfit', sans-serif;
   background-color: var(--primary-color);
   color: #fff;
   text-align: center;
@@ -70,19 +69,19 @@ body {
 
 .logo-container {
   display: flex;
-  align-items: center;              /* Alinea el logo y el texto en el centro verticalmente */
+  align-items: center;
 }
 
 .logo {
-  width: auto;                      /* Ancho del logotipo */
+  width: auto;
   height: 100px;
-  margin-right: 10px;               /* Espacio entre el logo y el texto */
+  margin-right: 10px;
 }
 
 .logo-text {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1e2761;
+  color: var(--primary-color);
 }
 
 /* Estilos de navegación */
@@ -94,15 +93,98 @@ body {
 }
 
 .navigation li {
-  margin-left: 20px;                /* Espacio entre los elementos del menú */
+  margin-left: 20px;
 }
 
 .navigation a {
   text-decoration: none;
-  color: #333;
+  color: var(--primary-color);
   font-weight: 500;
 }
 
 .navigation a:hover {
-  color: #1e2761;                   /* Cambia el color al pasar el ratón */
+  color: var(--color-azul);
+}
+
+/* Estilos personalizados para botones de Vuetify */
+.v-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-transform: none; /* Evita que el texto esté en mayúsculas */
+}
+
+/* Estilo para el botón primario corporativo */
+.v-btn.primary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Botón de éxito (Guardar Cambios) */
+.v-btn.success {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+/* Botón de advertencia */
+.v-btn.warning {
+  background-color: var(--warning-color) !important;
+  color: black !important;
+}
+
+/* Botón de error (rojo) */
+.v-btn.error {
+  background-color: var(--error-color) !important;
+  color: white !important;
+}
+
+/* Botón gris (Cancelar) */
+.v-btn.grey {
+  background-color: var(--color-gris) !important;
+  color: black !important;
+}
+
+/* Estilos específicos para el botón principal */
+.boton-principal {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+/* Estilo personalizado para enlaces en botones */
+.btn-primary {
+  background-color: var(--color-azul);
+  color: white;
+  font-size: 1.2em;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+/* Alineación de botones en lista de usuarios */
+.user-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  margin-right: 25px;
+}
+
+.user-info {
+  text-align: left;
+  color: var(--primary-color);
+}
+
+/* Asegura que todos los elementos usen la fuente 'Outfit' */
+* {
+  font-family: 'Outfit', sans-serif;
 }

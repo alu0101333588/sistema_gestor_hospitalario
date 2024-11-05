@@ -43,7 +43,7 @@
         <h1>Especialistas en cuidarte</h1>
         <p>Cuidando tu salud con tecnología de vanguardia y atención personalizada</p>
         <div class="d-grid gap-2 d-md-block">
-            <button class="btn btn-primary" type="button">Portal del paciente</button>
+            <button class="btn btn-primary boton-principal" type="button">Portal del paciente</button>
         </div>
       </section>
   
@@ -77,8 +77,9 @@
         <h2>Área personal de salud</h2>
         <p>Accede a cualquier hora del día para cuidar tu salud. En el Portal del Paciente tienes tu espacio personal privado y seguro en el que puedes solicitar y gestionar tus citas o consultar tus informes clínicos.</p>
         <div class="d-grid gap-2 d-md-block">
-            <button class="btn btn-primary" type="button">Regístrate ahora</button>
+            <button class="btn btn-primary" color="white" type="button" >Regístrate ahora</button>
         </div>
+      
       </section>
   
       <!-- Footer (Pie de página) -->
@@ -91,7 +92,7 @@
   
 <script>
 export default {
-    name: "PaginaInicio",
+  name: "PaginaInicio",
 };
 </script>
   
@@ -114,4 +115,16 @@ export default {
   width: 100px;               /* Ajusta el ancho deseado para todas las imágenes */
   height: auto;               /* Mantiene la proporción de la imagen */
 }
+
+.boton {
+  background-color: var(--primary-color) !important; 
+  color: white !important;
+}
+
+.boton-white {
+  background-color: white !important;
+  color: var(--primary-color) !important;
+}
+
+
 </style>

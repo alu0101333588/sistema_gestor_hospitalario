@@ -20,24 +20,71 @@
           <option value="recepcionista">Recepcionista</option>
         </select>
       </label>
-      <button type="submit">{{ editarUsuarioId ? 'Guardar Cambios' : 'Crear Usuario' }}</button>
-      <button v-if="editarUsuarioId" @click="cancelarEdicion" type="button">Cancelar</button>
+
+      <!-- Botón de Crear Usuario con color azul y letras blancas -->
+      <v-btn
+        class="ma-2 boton-crear"
+        type="submit"
+        v-if="!editarUsuarioId"
+      >
+        Crear Usuario
+      </v-btn>
+
+      <!-- Botón de Guardar Cambios con color verde -->
+      <v-btn
+        class="ma-2 boton-guardar"
+        type="submit"
+        v-if="editarUsuarioId"
+      >
+        <v-icon start icon="mdi-content-save"></v-icon>
+        Guardar Cambios
+      </v-btn>
+
+      <!-- Botón de Cancelar con color gris -->
+      <v-btn
+        class="ma-2 boton-cancelar"
+        type="button"
+        @click="cancelarEdicion"
+        v-if="editarUsuarioId"
+      >
+        <v-icon start icon="mdi-cancel"></v-icon>
+        Cancelar
+      </v-btn>
     </form>
 
     <!-- Lista de usuarios -->
     <h3>Lista de Usuarios</h3>
     <ul>
-      <li v-for="usuario in usuarios" :key="usuario._id">
-        <button @click="confirmarEliminacion(usuario._id, usuario.name)">Eliminar</button>
-        <button @click="cargarUsuario(usuario)">Modificar</button>
-        {{ usuario.name }} - {{ usuario.email }} - {{ usuario.role }}
+      <li v-for="usuario in usuarios" :key="usuario._id" class="user-item">
+        <!-- Botones de Modificar y Eliminar a la izquierda -->
+        <div class="user-actions">
+          <v-btn
+            class="boton-modificar ma-2"
+            @click="cargarUsuario(usuario)"
+          >
+          <i class="bi bi-pencil-square"></i>
+            
+          </v-btn>
+
+
+          <v-btn
+            class="ma-2 boton-eliminar"
+            @click="confirmarEliminacion(usuario._id, usuario.name)"
+          >
+          <i class="bi bi-trash"></i>
+          </v-btn>
+        </div>
+        
+        <!-- Datos del usuario alineados a la izquierda -->
+        <span class="user-info">{{ usuario.name }} - {{ usuario.email }} - {{ usuario.role }}</span>
       </li>
     </ul>
   </div>
 </template>
 
+
 <script>
-import apiClient from '@/apiClient'; // Importa apiClient en lugar de axios
+import apiClient from '@/apiClient';
 
 export default {
   name: 'CreacionUsuarios',
@@ -49,7 +96,7 @@ export default {
         email: '',
         role: 'admin',
       },
-      editarUsuarioId: null, // ID del usuario que se está editando
+      editarUsuarioId: null,
     };
   },
   methods: {
@@ -64,8 +111,8 @@ export default {
     async crearUsuario() {
       try {
         const response = await apiClient.post('/api/users', this.nuevoUsuario);
-        this.usuarios.push(response.data); // Agrega el nuevo usuario a la lista
-        this.nuevoUsuario = { name: '', email: '', role: 'admin' }; // Resetea el formulario
+        this.usuarios.push(response.data);
+        this.nuevoUsuario = { name: '', email: '', role: 'admin' };
       } catch (error) {
         console.error('Error al crear usuario:', error);
       }
@@ -79,31 +126,28 @@ export default {
     async eliminarUsuario(id) {
       try {
         await apiClient.delete(`/api/users/${id}`);
-        this.usuarios = this.usuarios.filter(usuario => usuario._id !== id); // Elimina el usuario de la lista local
+        this.usuarios = this.usuarios.filter(usuario => usuario._id !== id);
       } catch (error) {
         console.error('Error al eliminar usuario:', error);
       }
     },
     cargarUsuario(usuario) {
-      // Cargar los datos del usuario en el formulario para editar
       this.nuevoUsuario = { ...usuario };
-      this.editarUsuarioId = usuario._id; // Guarda el ID del usuario en edición
+      this.editarUsuarioId = usuario._id;
     },
     async actualizarUsuario() {
       try {
         const response = await apiClient.put(`/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
-        // Actualizar el usuario en la lista local
         const index = this.usuarios.findIndex(usuario => usuario._id === this.editarUsuarioId);
         if (index !== -1) {
           this.usuarios.splice(index, 1, response.data);
         }
-        this.cancelarEdicion(); // Limpiar el formulario
+        this.cancelarEdicion();
       } catch (error) {
         console.error('Error al actualizar usuario:', error);
       }
     },
     cancelarEdicion() {
-      // Restablecer el formulario y la variable editarUsuarioId
       this.nuevoUsuario = { name: '', email: '', role: 'admin' };
       this.editarUsuarioId = null;
     }
@@ -113,3 +157,66 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.creacion-usuarios {
+  max-width: 700px;
+  margin: auto;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+label {
+  margin-bottom: 10px;
+}
+
+/* Estilos para los botones */
+.boton-crear {
+  background-color: var(--primary-color) !important; /* Azul corporativo */
+  color: white !important;
+}
+
+.boton-modificar {
+  background-color: var(--warning-color) !important; /* Naranja oscuro */
+  color: white !important;
+}
+
+
+.boton-eliminar {
+  background-color: var(--error-color) !important; /* Rojo */
+  color: white !important;
+}
+
+.boton-guardar {
+  background-color: var(--success-color) !important; /* Verde */
+  color: white !important;
+}
+
+.boton-cancelar {
+  background-color: var(--color-gris) !important; /* Gris */
+  color: black !important;
+}
+
+/* Estilos para alinear los elementos a la izquierda en la lista */
+.user-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  margin-right: 25px;
+}
+
+/* Alinea la información del usuario y botones a la izquierda */
+.user-info {
+  text-align: left;
+}
+</style>
