@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import apiClient from '@/apiClient'; // Importa apiClient en lugar de axios
 
 export default {
   name: 'CreacionUsuarios',
@@ -55,7 +55,7 @@ export default {
   methods: {
     async obtenerUsuarios() {
       try {
-        const response = await axios.get('http://localhost:3000/api/users');
+        const response = await apiClient.get('/api/users');
         this.usuarios = response.data;
       } catch (error) {
         console.error('Error al obtener usuarios:', error);
@@ -63,7 +63,7 @@ export default {
     },
     async crearUsuario() {
       try {
-        const response = await axios.post('http://localhost:3000/api/users', this.nuevoUsuario);
+        const response = await apiClient.post('/api/users', this.nuevoUsuario);
         this.usuarios.push(response.data); // Agrega el nuevo usuario a la lista
         this.nuevoUsuario = { name: '', email: '', role: 'admin' }; // Resetea el formulario
       } catch (error) {
@@ -78,7 +78,7 @@ export default {
     },
     async eliminarUsuario(id) {
       try {
-        await axios.delete(`http://localhost:3000/api/users/${id}`);
+        await apiClient.delete(`/api/users/${id}`);
         this.usuarios = this.usuarios.filter(usuario => usuario._id !== id); // Elimina el usuario de la lista local
       } catch (error) {
         console.error('Error al eliminar usuario:', error);
@@ -91,7 +91,7 @@ export default {
     },
     async actualizarUsuario() {
       try {
-        const response = await axios.put(`http://localhost:3000/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
+        const response = await apiClient.put(`/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
         // Actualizar el usuario en la lista local
         const index = this.usuarios.findIndex(usuario => usuario._id === this.editarUsuarioId);
         if (index !== -1) {
@@ -113,31 +113,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.creacion-usuarios {
-  max-width: 600px;
-  margin: auto;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-label {
-  margin-bottom: 10px;
-}
-
-button {
-  width: 120px;
-  padding: 8px;
-  margin-right: 10px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-</style>

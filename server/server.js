@@ -8,8 +8,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware para permitir solicitudes desde el frontend
-app.use(cors());
+// Define los orígenes permitidos
+const allowedOrigins = [
+  'https://joyful-sopapillas-cb1211.netlify.app/', // Reemplaza con la URL de tu sitio en Netlify
+  'http://localhost:8080'                    // Para desarrollo local
+];
+
+// Configura el middleware de CORS
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir solicitudes sin origen (como Postman) o de los dominios permitidos
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origen no permitido por CORS'));
+    }
+  }
+}));
 
 // Middleware para procesar JSON en el cuerpo de las solicitudes
 app.use(express.json());
