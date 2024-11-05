@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // Define los orígenes permitidos
 const allowedOrigins = [
-  'https://joyful-sopapillas-cb1211.netlify.app/', // Reemplaza con la URL de tu sitio en Netlify
+  'https://joyful-sopapillas-cb1211.netlify.app', // Reemplaza con la URL de tu sitio en Netlify
   'http://localhost:8080'                    // Para desarrollo local
 ];
 
