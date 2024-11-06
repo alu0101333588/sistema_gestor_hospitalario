@@ -15,18 +15,20 @@ router.get('/users', async (req, res) => {
 // Ruta para crear un usuario
 router.post('/users', async (req, res) => {
   console.log("Solicitud de creación de usuario recibida.");
-  console.log("Datos recibidos en req.body:", req.body); // Verificar que los datos se están recibiendo correctamente
+  console.log("Datos recibidos en req.body:", req.body);
 
   try {
-    const user = new User(req.body);
+    const user = new User(req.body); // `numeroUsuario` será asignado automáticamente
     await user.save();
-    console.log("Usuario creado exitosamente:", user); // Confirmación de creación
+    console.log("Usuario creado exitosamente:", user);
     res.status(201).json(user);
   } catch (error) {
     console.error('Error al crear usuario:', error);
     res.status(400).json({ message: 'Error al crear usuario', error });
   }
 });
+
+
 
 // Ruta para eliminar un usuario
 router.delete('/users/:id', async (req, res) => {
