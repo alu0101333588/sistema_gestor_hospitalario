@@ -85,13 +85,23 @@
     </div>
 
 
+
+
     
     <!-- Columna derecha: Lista de usuarios -->
     <div class="columna-lista">
       <h3>Lista de Usuarios</h3>
-      
-      <ul>
-        
+      <!-- Filtro para el tipo de usuario -->
+    <div class="filtro-tipo-usuario">
+    <label for="filtroTipo">Filtrar por tipo de usuario:</label>
+    <select v-model="filtroTipo" @change="filtrarUsuarios">
+      <option value="">Todos</option>
+      <option value="Administración">Administración</option>
+      <option value="Paciente">Paciente</option>
+      <option value="Médico">Médico</option>
+    </select>
+    </div>
+              
         <!-- Cabecera de la lista de usuarios -->
 <div class="user-list-header">
   <span class="user-column tipo"></span>
@@ -100,27 +110,24 @@
   <span class="user-column username">Nombre usuario</span>
   <span class="user-column tipo">Tipo de usuario</span>
 </div>
-  <li v-for="usuario in usuarios" :key="usuario._id" class="user-item">
-    <!-- Botones de Modificar y Eliminar -->
-    <div class="user-actions">
-      <v-btn class="boton-modificar ma-2" @click="cargarUsuario(usuario)">
-        <i class="bi bi-pencil-square"></i>
-      </v-btn>
-      <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
-        <i class="bi bi-trash"></i>
-      </v-btn>
-    </div>
-    
-    <!-- Información del usuario organizada en columnas -->
-    <div class="user-info">
+  <!-- Lista de usuarios filtrada -->
+  <ul>
+    <li v-for="usuario in usuariosFiltrados" :key="usuario._id" class="user-item">
+      <div class="user-actions">
+        <v-btn class="boton-modificar ma-2" @click="cargarUsuario(usuario)">
+          <i class="bi bi-pencil-square"></i>
+        </v-btn>
+        <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
+          <i class="bi bi-trash"></i>
+        </v-btn>
+      </div>
       <span class="user-column nombre">{{ usuario.nombre }}</span>
       <span class="user-column apellidos">{{ usuario.apellidos }}</span>
       <span class="user-column username">{{ usuario.username }}</span>
       <span class="user-column tipo">{{ usuario.tipo }}</span>
-    </div>
-  </li>
-</ul>
-    </div>
+    </li>
+  </ul>
+</div>
   </div>
 </template>
 
@@ -131,13 +138,14 @@ export default {
   name: 'CreacionUsuarios',
   data() {
   return {
+    filtroTipo: '', // Tipo de usuario seleccionado para el filtro
     usuarios: [],
     nuevoUsuario: {
       nombre: '',
       apellidos: '',
       username: '',
       password: '',
-      tipo: '', // Deja el tipo vacío para que no tenga un valor predeterminado
+      tipo: '',
       departamento: '',
       dni: '',
       fechaNacimiento: '',
@@ -149,6 +157,14 @@ export default {
     departamentosDisponibles: [],
   };
   },
+  computed: {
+    usuariosFiltrados() {
+      if (this.filtroTipo) {
+        return this.usuarios.filter(usuario => usuario.tipo === this.filtroTipo);
+      }
+      return this.usuarios;
+    },
+  },
   methods: {
     async obtenerUsuarios() {
       try {
@@ -157,6 +173,9 @@ export default {
       } catch (error) {
         console.error('Error al obtener usuarios:', error);
       }
+    },
+    filtrarUsuarios() {
+      // Este método se llama cuando se cambia el filtro, pero el cálculo se realiza en `usuariosFiltrados`
     },
     generarUsername() {
       if (this.nuevoUsuario.nombre && this.nuevoUsuario.apellidos) {
@@ -191,7 +210,7 @@ export default {
         apellidos: '',
         username: '',
         password: '',
-        tipo: 'Administración',
+        tipo: '',
         departamento: '',
         dni: '',
         fechaNacimiento: '',
@@ -440,5 +459,22 @@ select:focus {
   background-color: #C6DEFD; /* Mantiene el color de fondo al hacer foco */
 }
 
+
+.filtro-tipo-usuario {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.filtro-tipo-usuario label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.filtro-tipo-usuario select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--color-gris);
+}
 
 </style>
