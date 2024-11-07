@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
+// Ejecucción: nodemon server.js
+
 dotenv.config();
 
 const app = express();
@@ -17,7 +19,6 @@ const allowedOrigins = [
 // Configura el middleware de CORS
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitir solicitudes sin origen (como Postman) o de los dominios permitidos
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -51,6 +52,10 @@ app.get('/', (req, res) => {
 // Rutas de usuarios
 const userRoutes = require('./routes/userRoutes');
 app.use('/api', userRoutes); // Usa las rutas de usuario bajo el prefijo '/api'
+
+// Rutas de citas médicas
+const medicoCitasRoutes = require('./routes/medicoCitas');
+app.use('/api', medicoCitasRoutes); // Usa las rutas de citas bajo el prefijo '/api'
 
 // Iniciar el servidor
 app.listen(PORT, () => {

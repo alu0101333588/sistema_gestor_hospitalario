@@ -56,5 +56,16 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
+// Filtrar los usuarios Médicos
+router.get('/users/medicos', async (req, res) => {
+  try {
+    const medicos = await User.find({ tipo: 'Médico' });
+    res.status(200).json(medicos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener médicos', error });
+  }
+});
+
+
 
 module.exports = router;

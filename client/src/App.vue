@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" data-app>
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">Gestión Hospitalaria</a>
@@ -10,6 +10,9 @@
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/usuarios">Usuarios</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/agenda-medico">Agenda Médico</router-link> <!-- Enlace para la agenda -->
           </li>
         </ul>
       </div>
