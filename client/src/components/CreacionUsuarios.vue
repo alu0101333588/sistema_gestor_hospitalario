@@ -19,12 +19,12 @@
           <input type="password" v-model="nuevoUsuario.password" required />
         </label>
         <label>
-        Tipo:
-        <select v-model="nuevoUsuario.tipo" @change="actualizarOpcionesDepartamento" required>
-          <option value="" disabled selected>Seleccione tipo</option> <!-- Placeholder no seleccionable -->
-        <option value="Administración">Administración</option>
-        <option value="Paciente">Paciente</option>
-          <option value="Médico">Médico</option>
+          Tipo:
+          <select v-model="nuevoUsuario.tipo" @change="actualizarOpcionesDepartamento" required>
+            <option value="" disabled selected>Seleccione tipo</option>
+            <option value="Administración">Administración</option>
+            <option value="Paciente">Paciente</option>
+            <option value="Médico">Médico</option>
           </select>
         </label>
 
@@ -48,9 +48,9 @@
         <label>
           Género:
           <select v-model="nuevoUsuario.genero" required>
-          <option value="" disabled selected>Seleccione género</option> <!-- Placeholder no seleccionable -->
-          <option value="Masculino">Masculino</option>
-          <option value="Femenino">Femenino</option>
+            <option value="" disabled selected>Seleccione género</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
           </select>
         </label>
         <label>
@@ -66,68 +66,72 @@
           <input type="email" v-model="nuevoUsuario.email"/>
         </label>
 
-        <!-- Botón de Crear Usuario (solo se muestra cuando no se está editando un usuario) -->
         <v-btn class="ma-2 boton-crear" type="submit" v-if="!editarUsuarioId">
           Crear Usuario
         </v-btn>
-
-        <!-- Botón de Guardar Cambios (solo se muestra cuando se está editando un usuario) -->
         <v-btn class="ma-2 boton-guardar" type="button" v-if="editarUsuarioId" @click="actualizarUsuario">
           Guardar Cambios
         </v-btn>
-
-        <!-- Botón de Cancelar (solo se muestra cuando se está editando un usuario) -->
         <v-btn class="ma-2 boton-cancelar" type="button" v-if="editarUsuarioId" @click="cancelarEdicion">
           Cancelar
         </v-btn>
-
       </form>
     </div>
 
-
-
-
-    
     <!-- Columna derecha: Lista de usuarios -->
     <div class="columna-lista">
       <h3>Lista de Usuarios</h3>
+      
       <!-- Filtro para el tipo de usuario -->
-    <div class="filtro-tipo-usuario">
-    <label for="filtroTipo">Filtrar por tipo de usuario:</label>
-    <select v-model="filtroTipo" @change="filtrarUsuarios">
-      <option value="">Todos</option>
-      <option value="Administración">Administración</option>
-      <option value="Paciente">Paciente</option>
-      <option value="Médico">Médico</option>
-    </select>
-    </div>
-              
-        <!-- Cabecera de la lista de usuarios -->
-<div class="user-list-header">
-  <span class="user-column tipo"></span>
-  <span class="user-column nombre">Nombre</span>
-  <span class="user-column apellidos">Apellidos</span>
-  <span class="user-column username">Nombre usuario</span>
-  <span class="user-column tipo">Tipo de usuario</span>
-</div>
-  <!-- Lista de usuarios filtrada -->
-  <ul>
-    <li v-for="usuario in usuariosFiltrados" :key="usuario._id" class="user-item">
-      <div class="user-actions">
-        <v-btn class="boton-modificar ma-2" @click="cargarUsuario(usuario)">
-          <i class="bi bi-pencil-square"></i>
-        </v-btn>
-        <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
-          <i class="bi bi-trash"></i>
-        </v-btn>
+      <div class="filtro-tipo-usuario">
+        <label for="filtroTipo">Filtrar por tipo de usuario:</label>
+        <select v-model="filtroTipo" @change="filtrarUsuarios">
+          <option value="">Todos</option>
+          <option value="Administración">Administración</option>
+          <option value="Paciente">Paciente</option>
+          <option value="Médico">Médico</option>
+        </select>
       </div>
-      <span class="user-column nombre">{{ usuario.nombre }}</span>
-      <span class="user-column apellidos">{{ usuario.apellidos }}</span>
-      <span class="user-column username">{{ usuario.username }}</span>
-      <span class="user-column tipo">{{ usuario.tipo }}</span>
-    </li>
-  </ul>
-</div>
+      
+      <!-- Indicador de carga (rueda de progreso) -->
+      <div v-if="cargando" class="text-center">
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="#17195e"
+          indeterminate
+        ></v-progress-circular>
+      </div>
+      
+      <!-- Cabecera de la lista de usuarios -->
+      <div v-if="!cargando">
+        <div class="user-list-header">
+          <span class="user-column tipo"></span>
+          <span class="user-column nombre">Nombre</span>
+          <span class="user-column apellidos">Apellidos</span>
+          <span class="user-column username">Nombre usuario</span>
+          <span class="user-column tipo">Tipo de usuario</span>
+        </div>
+        
+        <!-- Lista de usuarios filtrada -->
+        <ul>
+          <li v-for="usuario in usuariosFiltrados" :key="usuario._id" class="user-item">
+            <div class="user-actions">
+              <v-btn class="boton-modificar ma-2" @click="cargarUsuario(usuario)">
+                <i class="bi bi-pencil-square"></i>
+              </v-btn>
+              <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
+                <i class="bi bi-trash"></i>
+              </v-btn>
+            </div>
+            <span class="user-column nombre">{{ usuario.nombre }}</span>
+            <span class="user-column apellidos">{{ usuario.apellidos }}</span>
+            <span class="user-column username">{{ usuario.username }}</span>
+            <span class="user-column tipo">{{ usuario.tipo }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -137,25 +141,26 @@ import apiClient from '@/apiClient';
 export default {
   name: 'CreacionUsuarios',
   data() {
-  return {
-    filtroTipo: '', // Tipo de usuario seleccionado para el filtro
-    usuarios: [],
-    nuevoUsuario: {
-      nombre: '',
-      apellidos: '',
-      username: '',
-      password: '',
-      tipo: '',
-      departamento: '',
-      dni: '',
-      fechaNacimiento: '',
-      genero: '',
-      direccion: '',
-      telefono: '',
-      email: '',
-    },
-    departamentosDisponibles: [],
-  };
+    return {
+      filtroTipo: '', // Tipo de usuario seleccionado para el filtro
+      usuarios: [],
+      nuevoUsuario: {
+        nombre: '',
+        apellidos: '',
+        username: '',
+        password: '',
+        tipo: '',
+        departamento: '',
+        dni: '',
+        fechaNacimiento: '',
+        genero: '',
+        direccion: '',
+        telefono: '',
+        email: '',
+      },
+      departamentosDisponibles: [],
+      cargando: false, // Estado de carga para la lista de usuarios
+    };
   },
   computed: {
     usuariosFiltrados() {
@@ -167,11 +172,14 @@ export default {
   },
   methods: {
     async obtenerUsuarios() {
+      this.cargando = true; // Inicia el indicador de carga
       try {
         const response = await apiClient.get('/api/users');
         this.usuarios = response.data;
       } catch (error) {
         console.error('Error al obtener usuarios:', error);
+      } finally {
+        this.cargando = false; // Finaliza el indicador de carga
       }
     },
     filtrarUsuarios() {
@@ -199,7 +207,7 @@ export default {
       try {
         await apiClient.post('/api/users', this.nuevoUsuario);
         this.obtenerUsuarios();
-        this.resetFormulario(); // Limpia el formulario tras la creación
+        this.resetFormulario();
       } catch (error) {
         console.error('Error al crear usuario:', error);
       }
@@ -220,60 +228,50 @@ export default {
         email: '',
       };
     },
-    // Método para cargar un usuario en el formulario para editarlo
     cargarUsuario(usuario) {
       this.nuevoUsuario = { ...usuario };
       this.editarUsuarioId = usuario._id;
     },
-    // Método para confirmar y eliminar un usuario
     confirmarEliminacion(id, nombre) {
       const confirmacion = window.confirm(`¿Está seguro de que desea eliminar el usuario ${nombre}?`);
       if (confirmacion) {
         this.eliminarUsuario(id);
       }
     },
-    // Método para realizar la eliminación del usuario
     async eliminarUsuario(id) {
       try {
         await apiClient.delete(`/api/users/${id}`);
-        this.obtenerUsuarios(); // Actualiza la lista de usuarios tras la eliminación
+        this.obtenerUsuarios();
       } catch (error) {
         console.error('Error al eliminar usuario:', error);
-    }
-  },
-  // Método para actualizar un usuario existente
-  async actualizarUsuario() {
-    try {
-      await apiClient.put(`/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
-      this.obtenerUsuarios(); // Vuelve a cargar la lista de usuarios
-      this.resetFormulario(); // Limpia el formulario
-      this.editarUsuarioId = null; // Resetea el modo de edición
-    } catch (error) {
-      console.error('Error al actualizar usuario:', error);
-    }
-  },
-
-  // Método para cancelar la edición
-  cancelarEdicion() {
-    this.resetFormulario(); // Limpia el formulario
-    this.editarUsuarioId = null; // Resetea el modo de edición
-  },
+      }
+    },
+    async actualizarUsuario() {
+      try {
+        await apiClient.put(`/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
+        this.obtenerUsuarios();
+        this.resetFormulario();
+        this.editarUsuarioId = null;
+      } catch (error) {
+        console.error('Error al actualizar usuario:', error);
+      }
+    },
+    cancelarEdicion() {
+      this.resetFormulario();
+      this.editarUsuarioId = null;
+    },
   },
   mounted() {
-    this.obtenerUsuarios(); // Llama a la función una vez al montar el componente
-
-    // Establece un intervalo para actualizar la lista de usuarios cada 10 segundos
+    this.obtenerUsuarios();
     this.intervalId = setInterval(() => {
       this.obtenerUsuarios();
-    }, 10000); // 10000 ms = 10 segundos
+    }, 10000);
   },
   beforeDestroy() {
-    // Limpia el intervalo cuando el componente se destruye para evitar fugas de memoria
     clearInterval(this.intervalId);
   },
 };
 </script>
-
 
 <style scoped>
 /* Contenedor principal para organizar formulario y lista en columnas */
