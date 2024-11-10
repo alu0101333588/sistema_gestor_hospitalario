@@ -6,6 +6,8 @@
       
       <!-- Formulario para crear un usuario -->
       <form @submit.prevent="crearUsuario">
+        <img v-if="fotoPreview" :src="fotoPreview" alt="Previsualización de Foto de Perfil" class="foto-preview"/>
+
         <label>Nombre:
           <input type="text" v-model="nuevoUsuario.nombre" @input="generarUsername" required />
         </label>
@@ -23,6 +25,7 @@
             <option value="Médico">Médico</option>
           </select>
         </label>
+
 
         <!-- Campo de Departamento (solo se muestra si corresponde) -->
         <label v-if="departamentosDisponibles.length > 0">
@@ -109,36 +112,34 @@
         <p>La lista está vacía</p>
       </div>
 
-      <!-- Cabecera de la lista de usuarios -->
-      <div v-if="!cargando && !errorServidor && usuariosFiltrados.length > 0">
-        <div class="user-list-header">
-          <span class="user-column tipo"></span>
-          <span class="user-column nombre">Nombre</span>
-          <span class="user-column apellidos">Apellidos</span>
-          <span class="user-column username">Nombre usuario</span>
-          <span class="user-column tipo">Tipo de usuario</span>
-        </div>
-
-        <!-- Lista de usuarios filtrada -->
-        <ul>
-          <li v-for="usuario in usuariosFiltrados" :key="usuario._id" class="user-item">
-            <div class="user-actions">
-              <v-btn class="boton-modificar ma-2" @click="cargarUsuario(usuario)">
-                <i class="bi bi-pencil-square"></i>
-              </v-btn>
-              <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
-                <i class="bi bi-trash"></i>
-              </v-btn>
-            </div>
-            <span class="user-column nombre">{{ usuario.nombre }}</span>
-            <span class="user-column apellidos">{{ usuario.apellidos }}</span>
-            <span class="user-column username">{{ usuario.username }}</span>
-            <span class="user-column tipo">{{ usuario.tipo }}</span>
-          </li>
-        </ul>
+      <!-- Tabla de usuarios -->
+      <table v-if="!cargando && !errorServidor && usuariosFiltrados.length > 0" class="user-table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nombre</th>
+      <th>Username</th>
+      <th>Tipo de usuario</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="usuario in usuariosFiltrados" :key="usuario._id">
+      <td class="user-actions">
+        <v-btn class="boton-modificar" @click="cargarUsuario(usuario)">
+          <i class="bi bi-pencil-square"></i>
+        </v-btn>
+        <v-btn class="boton-eliminar" @click="confirmarEliminacion(usuario._id, usuario.nombre)">
+          <i class="bi bi-trash"></i>
+        </v-btn>
+      </td>
+      <td>{{ usuario.nombre }} {{ usuario.apellidos }}</td>
+      <td>{{ usuario.username }}</td>
+      <td>{{ usuario.tipo }}</td>
+    </tr>
+  </tbody>
+</table>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -163,7 +164,9 @@ export default {
         direccion: '',
         telefono: '',
         email: '',
+        foto: null 
       },
+      fotoPreview: require('@/assets/fotos_perfil/perfil_defecto.png'),
       departamentosDisponibles: [],
       cargando: false, // Estado de carga
       errorServidor: false, // Estado de error
@@ -178,32 +181,32 @@ export default {
     },
   },
   methods: {
-    async obtenerUsuarios() {
-      this.cargando = true;
-      this.errorServidor = false; // Reinicia el error antes de la solicitud
-      try {
-        const response = await apiClient.get('/api/usuarios');
-        this.usuarios = response.data;
-      } catch (error) {
-        console.error('Error al obtener usuarios:', error);
-        this.errorServidor = true; // Activa el estado de error si la solicitud falla
-      } finally {
+  async obtenerUsuarios() {
+    this.cargando = true;
+    this.errorServidor = false;
+    try {
+      const response = await apiClient.get('/api/usuarios');
+      this.usuarios = response.data;
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      this.errorServidor = true;
+    } finally {
       this.cargando = false;
     }
   },
 
-    filtrarUsuarios() {
-      // Este método se llama cuando se cambia el filtro, pero el cálculo se realiza en `usuariosFiltrados`
-    },
-    generarUsername() {
-      if (this.nuevoUsuario.nombre && this.nuevoUsuario.apellidos) {
-        const iniciales = this.nuevoUsuario.nombre.charAt(0).toLowerCase() + 
-                          this.nuevoUsuario.apellidos.replace(/\s+/g, '').slice(0, 2).toLowerCase();
-        const numeroAleatorio = Math.floor(1000 + Math.random() * 9000);
-        this.nuevoUsuario.username = `${iniciales}${numeroAleatorio}`;
-      }
-    },
-    actualizarOpcionesDepartamento() {
+  filtrarUsuarios() {
+    // Este método se llama cuando se cambia el filtro, pero el cálculo se realiza en `usuariosFiltrados`
+  },
+  generarUsername() {
+    if (this.nuevoUsuario.nombre && this.nuevoUsuario.apellidos) {
+      const iniciales = this.nuevoUsuario.nombre.charAt(0).toLowerCase() + 
+                        this.nuevoUsuario.apellidos.replace(/\s+/g, '').slice(0, 2).toLowerCase();
+      const numeroAleatorio = Math.floor(1000 + Math.random() * 9000);
+      this.nuevoUsuario.username = `${iniciales}${numeroAleatorio}`;
+    }
+  },
+  actualizarOpcionesDepartamento() {
       if (this.nuevoUsuario.tipo === 'Médico') {
         this.departamentosDisponibles = ['Oncología', 'Pediatría', 'Medicina Interna', 'Cirugía General', 'Urgencias'];
       } else if (this.nuevoUsuario.tipo === 'Administración') {
@@ -214,34 +217,63 @@ export default {
       }
     },
     async crearUsuario() {
-      try {
-        await apiClient.post('/api/usuarios', this.nuevoUsuario);
-        this.obtenerUsuarios();
-        this.resetFormulario();
-      } catch (error) {
-        console.error('Error al crear usuario:', error);
-      }
-    },
-    resetFormulario() {
-      this.nuevoUsuario = {
-        nombre: '',
-        apellidos: '',
-        username: '',
-        password: '',
-        tipo: '',
-        departamento: '',
-        dni: '',
-        fechaNacimiento: '',
-        genero: '',
-        direccion: '',
-        telefono: '',
-        email: '',
-      };
-    },
-    cargarUsuario(usuario) {
-      this.nuevoUsuario = { ...usuario };
-      this.editarUsuarioId = usuario._id;
-    },
+    const formData = new FormData();
+    formData.append('nombre', this.nuevoUsuario.nombre);
+    formData.append('apellidos', this.nuevoUsuario.apellidos);
+    formData.append('username', this.nuevoUsuario.username);
+    formData.append('password', this.nuevoUsuario.password);
+    formData.append('tipo', this.nuevoUsuario.tipo);
+    formData.append('departamento', this.nuevoUsuario.departamento);
+    formData.append('dni', this.nuevoUsuario.dni);
+    formData.append('fechaNacimiento', this.nuevoUsuario.fechaNacimiento);
+    formData.append('genero', this.nuevoUsuario.genero);
+    formData.append('direccion', this.nuevoUsuario.direccion);
+    formData.append('telefono', this.nuevoUsuario.telefono);
+    formData.append('email', this.nuevoUsuario.email);
+
+    // Añade la foto solo si el usuario ha seleccionado una
+    if (this.nuevoUsuario.foto) {
+      formData.append('foto', this.nuevoUsuario.foto);
+    }
+
+    try {
+      await apiClient.post('/api/usuarios', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      this.obtenerUsuarios();
+      this.resetFormulario();
+    } catch (error) {
+      console.error('Error al crear usuario:', error);
+    }
+  },
+  resetFormulario() {
+    this.nuevoUsuario = {
+      nombre: '',
+      apellidos: '',
+      username: '',
+      password: '',
+      tipo: '',
+      departamento: '',
+      dni: '',
+      fechaNacimiento: '',
+      genero: '',
+      direccion: '',
+      telefono: '',
+      email: '',
+      foto: null
+    };
+    this.fotoPreview = require('@/assets/fotos_perfil/perfil_defecto.png');
+    this.editarUsuarioId = null; // Salir del modo de edición
+  },
+  
+  cargarUsuario(usuario) {
+    this.nuevoUsuario = { ...usuario };
+    this.editarUsuarioId = usuario._id;
+  },
+
+
     confirmarEliminacion(id, nombre) {
       const confirmacion = window.confirm(`¿Está seguro de que desea eliminar el usuario ${nombre}?`);
       if (confirmacion) {
@@ -257,19 +289,42 @@ export default {
       }
     },
     async actualizarUsuario() {
+      const formData = new FormData();
+      formData.append('nombre', this.nuevoUsuario.nombre);
+      formData.append('apellidos', this.nuevoUsuario.apellidos);
+      formData.append('username', this.nuevoUsuario.username);
+      formData.append('password', this.nuevoUsuario.password);
+      formData.append('tipo', this.nuevoUsuario.tipo);
+      formData.append('departamento', this.nuevoUsuario.departamento);
+      formData.append('dni', this.nuevoUsuario.dni);
+
+      // Asegurar que `fechaNacimiento` sea `null` o un valor adecuado
+
+      formData.append('genero', this.nuevoUsuario.genero);
+      formData.append('direccion', this.nuevoUsuario.direccion);
+      formData.append('telefono', this.nuevoUsuario.telefono);
+      formData.append('email', this.nuevoUsuario.email);
+
+      // Agregar la imagen solo si hay una nueva seleccionada
+      if (this.nuevoUsuario.foto && typeof this.nuevoUsuario.foto !== 'string') {
+        formData.append('foto', this.nuevoUsuario.foto);
+      }
+
       try {
-        await apiClient.put(`/api/usuarios/${this.editarUsuarioId}`, this.nuevoUsuario);
-        this.obtenerUsuarios();
-        this.resetFormulario();
-        this.editarUsuarioId = null;
-      } catch (error) {
+        await apiClient.put(`/api/usuarios/${this.editarUsuarioId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        await this.obtenerUsuarios(); // Recargar la lista de usuarios
+        this.resetFormulario(); // Resetear el formulario después de la edición
+      }   catch (error) {
         console.error('Error al actualizar usuario:', error);
       }
-    },
-    cancelarEdicion() {
-      this.resetFormulario();
-      this.editarUsuarioId = null;
-    },
+  },
+  cancelarEdicion() {
+    this.resetFormulario();
+  },
   },
   mounted() {
     this.obtenerUsuarios();
@@ -330,20 +385,22 @@ label {
   font-weight: bold;
 }
 
+/* Estilos para botones */
 .boton-modificar {
   background-color: var(--warning-color) !important; /* Naranja */
   color: white !important;
-  width: 40px; /* Hace el botón cuadrado */
+  width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 5px;
 }
 
 .boton-eliminar {
   background-color: var(--error-color) !important; /* Rojo */
   color: white !important;
-  width: 40px; /* Hace el botón cuadrado */
+  width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -378,9 +435,11 @@ label {
 
 .user-actions {
   display: flex;
-  gap: 10px;
-  margin-right: 15px;
+  gap: 5px; /* Espacio entre botones */
+  align-items: center;
+  justify-content: flex-start;
 }
+
 
 .user-info {
   display: flex;
@@ -493,4 +552,45 @@ select:focus {
 .alert-text {
   margin-left: 20px; /* Ajusta el margen para aumentar la separación */
 }
+
+
+.foto-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 20%;
+  margin-top: 10px;
+  object-fit: cover;
+  margin-bottom: 30px;
+  align-self: center;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.user-table th,
+.user-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-table tr {
+  margin: 0; /* Asegura que no haya espacios adicionales */
+  padding: 0;
+}
+
+.user-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.user-table td {
+  vertical-align: middle;
+}
+
+
+
 </style>

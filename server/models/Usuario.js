@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose); // Asegúrate de que esta línea esté así
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
@@ -13,8 +13,10 @@ const userSchema = new mongoose.Schema({
   genero: { type: String, enum: ['Masculino', 'Femenino'] },
   direccion: { type: String },
   telefono: { type: String },
-  email: { type: String, unique: true },
-  fechaUltimoAcceso: { type: Date, default: null }
+  email: { type: String },
+  fechaUltimoAcceso: { type: Date, default: null },
+  estatus: { type: String, default: 'activo' },
+  foto: { type: String} // Ruta de la foto por defecto
 });
 
 // Aplica el plugin de autoincremento al esquema de usuario

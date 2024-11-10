@@ -2,13 +2,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 // Ejecucción: nodemon server.js
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+dotenv.config();
+
+
+// Sirve la carpeta public como estática para que el frontend pueda acceder a las imágenes
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+
+
 
 // Define los orígenes permitidos
 const allowedOrigins = [

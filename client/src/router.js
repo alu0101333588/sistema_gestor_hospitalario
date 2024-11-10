@@ -5,6 +5,7 @@ import PaginaInicio from './components/Inicio.vue';
 import CreacionUsuarios from './components/CreacionUsuarios.vue';
 import AgendaMedico from './components/AgendaMedico.vue';
 import GestionDepartamentos from './components/GestionDepartamentos.vue'; 
+import PaginaError from './components/PaginaError.vue';
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,11 @@ const routes = [
     path: '/departamentos',
     name: 'GestionDepartamentos',
     component: GestionDepartamentos,
+  },
+  {
+    path: '*', // Ruta comodín para capturar rutas no existentes
+    name: 'PaginaError',
+    component: PaginaError,
   },
 ];
 

@@ -1,6 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario'); // Importa el modelo de usuario
+const multer = require('multer');
+const path = require('path');
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads'); // Directorio de destino de las imágenes
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Renombra el archivo
+  }
+});
+
+const upload = multer({ storage });
 
 // Ruta para obtener todos los usuarios
 router.get('/usuarios', async (req, res) => {
@@ -12,15 +26,15 @@ router.get('/usuarios', async (req, res) => {
   }
 });
 
-// Ruta para crear un usuario
-router.post('/usuarios', async (req, res) => {
-  console.log("Solicitud de creación de usuario recibida.");
-  console.log("Datos recibidos en req.body:", req.body);
-
+// Ruta para crear un usuario, incluyendo la carga de imagen
+router.post('/usuarios', upload.single('foto'), async (req, res) => {
   try {
-    const usuario = new Usuario(req.body); // `numeroUsuario` será asignado automáticamente
+    const usuarioData = { ...req.body };
+    if (req.file) {
+      usuarioData.foto = `/uploads/${req.file.filename}`;
+    }
+    const usuario = new Usuario(usuarioData);
     await usuario.save();
-    console.log("Usuario creado exitosamente:", usuario);
     res.status(201).json(usuario);
   } catch (error) {
     console.error('Error al crear usuario:', error);
@@ -43,18 +57,32 @@ router.delete('/usuarios/:id', async (req, res) => {
   }
 });
 
-// Ruta para actualizar un usuario
-router.put('/usuarios/:id', async (req, res) => {
+// Ruta para actualizar un usuario, incluyendo la actualización de la imagen de perfil
+router.put('/usuarios/:id', upload.single('foto'), async (req, res) => {
   try {
-    const usuario = await Usuario.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const usuarioData = { ...req.body };
+
+    // Si hay una nueva imagen, actualizamos la propiedad `foto` en el usuario
+    if (req.file) {
+      usuarioData.foto = `/uploads/${req.file.filename}`;
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(req.params.id, usuarioData, {
+      new: true,
+      runValidators: true
+    });
+    
     if (!usuario) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
+
     res.status(200).json(usuario);
   } catch (error) {
+    console.error('Error al actualizar usuario:', error);
     res.status(400).json({ message: 'Error al actualizar usuario', error });
   }
 });
+
 
 // Filtrar los usuarios Médicos
 router.get('/usuarios/medicos', async (req, res) => {

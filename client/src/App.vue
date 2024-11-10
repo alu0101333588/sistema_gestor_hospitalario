@@ -17,6 +17,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/departamentos">Departamentos</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/error">Página error</router-link>
+          </li>
         </ul>
       </div>
     </nav>
