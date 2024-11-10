@@ -1,27 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // Importa el modelo de usuario
+const Usuario = require('../models/Usuario'); // Importa el modelo de usuario
 
 // Ruta para obtener todos los usuarios
-router.get('/users', async (req, res) => {
+router.get('/usuarios', async (req, res) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    const usuarios = await Usuario.find();
+    res.status(200).json(usuarios);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener usuarios', error });
   }
 });
 
 // Ruta para crear un usuario
-router.post('/users', async (req, res) => {
+router.post('/usuarios', async (req, res) => {
   console.log("Solicitud de creación de usuario recibida.");
   console.log("Datos recibidos en req.body:", req.body);
 
   try {
-    const user = new User(req.body); // `numeroUsuario` será asignado automáticamente
-    await user.save();
-    console.log("Usuario creado exitosamente:", user);
-    res.status(201).json(user);
+    const usuario = new Usuario(req.body); // `numeroUsuario` será asignado automáticamente
+    await usuario.save();
+    console.log("Usuario creado exitosamente:", usuario);
+    res.status(201).json(usuario);
   } catch (error) {
     console.error('Error al crear usuario:', error);
     res.status(400).json({ message: 'Error al crear usuario', error });
@@ -31,10 +31,10 @@ router.post('/users', async (req, res) => {
 
 
 // Ruta para eliminar un usuario
-router.delete('/users/:id', async (req, res) => {
+router.delete('/usuarios/:id', async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
+    const usuario = await Usuario.findByIdAndDelete(req.params.id);
+    if (!usuario) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
@@ -44,22 +44,22 @@ router.delete('/users/:id', async (req, res) => {
 });
 
 // Ruta para actualizar un usuario
-router.put('/users/:id', async (req, res) => {
+router.put('/usuarios/:id', async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!user) {
+    const usuario = await Usuario.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!usuario) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
-    res.status(200).json(user);
+    res.status(200).json(usuario);
   } catch (error) {
     res.status(400).json({ message: 'Error al actualizar usuario', error });
   }
 });
 
 // Filtrar los usuarios Médicos
-router.get('/users/medicos', async (req, res) => {
+router.get('/usuarios/medicos', async (req, res) => {
   try {
-    const medicos = await User.find({ tipo: 'Médico' });
+    const medicos = await Usuario.find({ tipo: 'Médico' });
     res.status(200).json(medicos);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener médicos', error });

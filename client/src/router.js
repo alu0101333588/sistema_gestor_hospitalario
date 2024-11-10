@@ -3,7 +3,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import PaginaInicio from './components/Inicio.vue';
 import CreacionUsuarios from './components/CreacionUsuarios.vue';
-import AgendaMedico from './components/AgendaMedico.vue'; // Importa el nuevo componente
+import AgendaMedico from './components/AgendaMedico.vue';
+import GestionDepartamentos from './components/GestionDepartamentos.vue'; 
 
 Vue.use(VueRouter);
 
@@ -19,9 +20,14 @@ const routes = [
     component: CreacionUsuarios,
   },
   {
-    path: '/agenda-medico', // Nueva ruta para Agenda Médico
+    path: '/agenda-medico', 
     name: 'AgendaMedico',
     component: AgendaMedico,
+  },
+  {
+    path: '/departamentos',
+    name: 'GestionDepartamentos',
+    component: GestionDepartamentos,
   },
 ];
 

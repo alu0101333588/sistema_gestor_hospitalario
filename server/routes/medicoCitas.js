@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Cita = require('../models/Cita');
-const User = require('../models/User');
+const Usuario = require('../models/Usuario');
 
 // Ruta para abrir disponibilidad de consultas
 router.post('/citas/abrir', async (req, res) => {

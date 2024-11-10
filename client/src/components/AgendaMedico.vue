@@ -112,7 +112,7 @@
     methods: {
       async cargarMedicos() {
         try {
-          const response = await apiClient.get('/api/users/medicos');
+          const response = await apiClient.get('/api/usuarios/medicos');
           this.medicos = response.data.map(medico => ({
             ...medico,
             nombreCompleto: `${medico.nombre} ${medico.apellidos}`
@@ -125,7 +125,7 @@
   
       async cargarPacientes() {
         try {
-          const response = await apiClient.get('/api/users?tipo=Paciente');
+          const response = await apiClient.get('/api/usuarios?tipo=Paciente');
           this.pacientes = response.data.map(paciente => ({
             ...paciente,
             nombreCompleto: `${paciente.nombre} ${paciente.apellidos}`

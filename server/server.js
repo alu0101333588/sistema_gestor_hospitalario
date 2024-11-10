@@ -51,7 +51,11 @@ app.get('/', (req, res) => {
 
 // Rutas de usuarios
 const userRoutes = require('./routes/userRoutes');
+const departamentoRoutes = require('./routes/departamentoRoutes'); // Nueva ruta
+
+
 app.use('/api', userRoutes); // Usa las rutas de usuario bajo el prefijo '/api'
+app.use('/api', departamentoRoutes); // Ruta para departamentos
 
 // Rutas de citas médicas
 const medicoCitasRoutes = require('./routes/medicoCitas');

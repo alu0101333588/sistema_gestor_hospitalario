@@ -20,4 +20,4 @@ const userSchema = new mongoose.Schema({
 // Aplica el plugin de autoincremento al esquema de usuario
 userSchema.plugin(AutoIncrement, { inc_field: 'numeroUsuario' });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Usuario', userSchema);

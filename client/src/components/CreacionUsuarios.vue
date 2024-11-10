@@ -3,23 +3,19 @@
     <!-- Columna izquierda: Formulario de creación de usuarios -->
     <div class="columna-formulario">
       <h2>Gestión de Usuarios</h2>
-
+      
       <!-- Formulario para crear un usuario -->
       <form @submit.prevent="crearUsuario">
-        <label>
-          Nombre:
+        <label>Nombre:
           <input type="text" v-model="nuevoUsuario.nombre" @input="generarUsername" required />
         </label>
-        <label>
-          Apellidos:
+        <label>Apellidos:
           <input type="text" v-model="nuevoUsuario.apellidos" @input="generarUsername" required />
         </label>
-        <label>
-          Contraseña:
+        <label>Contraseña:
           <input type="password" v-model="nuevoUsuario.password" required />
         </label>
-        <label>
-          Tipo:
+        <label>Tipo:
           <select v-model="nuevoUsuario.tipo" @change="actualizarOpcionesDepartamento" required>
             <option value="" disabled selected>Seleccione tipo</option>
             <option value="Administración">Administración</option>
@@ -37,32 +33,26 @@
         </label>
 
         <!-- Campos opcionales -->
-        <label>
-          DNI:
+        <label>DNI:
           <input type="text" v-model="nuevoUsuario.dni" />
         </label>
-        <label>
-          Fecha de Nacimiento:
+        <label>Fecha de Nacimiento:
           <input type="date" v-model="nuevoUsuario.fechaNacimiento" />
         </label>
-        <label>
-          Género:
+        <label>Género:
           <select v-model="nuevoUsuario.genero" required>
             <option value="" disabled selected>Seleccione género</option>
             <option value="Masculino">Masculino</option>
             <option value="Femenino">Femenino</option>
           </select>
         </label>
-        <label>
-          Dirección:
+        <label>Dirección:
           <input type="text" v-model="nuevoUsuario.direccion" />
         </label>
-        <label>
-          Teléfono:
+        <label>Teléfono:
           <input type="text" v-model="nuevoUsuario.telefono" />
         </label>
-        <label>
-          Correo Electrónico:
+        <label>Correo Electrónico:
           <input type="email" v-model="nuevoUsuario.email"/>
         </label>
 
@@ -93,8 +83,19 @@
         </select>
       </div>
       
-      <!-- Indicador de carga (rueda de progreso) -->
-      <div v-if="cargando" class="text-center">
+      <!-- Mensaje de error de comunicación -->
+      <v-alert
+        v-if="errorServidor"
+        type="error"
+        class="alerta-error"
+        prominent
+        color="red lighten-3"
+      >
+      <span class="alert-text">Fallo de comunicación con el servidor</span>
+      </v-alert>
+
+      <!-- Indicador de carga -->
+      <div v-if="cargando && !errorServidor" class="text-center">
         <v-progress-circular
           :size="70"
           :width="7"
@@ -102,9 +103,14 @@
           indeterminate
         ></v-progress-circular>
       </div>
-      
+
+      <!-- Mensaje de lista vacía -->
+      <div v-if="!cargando && !errorServidor && usuariosFiltrados.length === 0" class="texto-centrado">
+        <p>La lista está vacía</p>
+      </div>
+
       <!-- Cabecera de la lista de usuarios -->
-      <div v-if="!cargando">
+      <div v-if="!cargando && !errorServidor && usuariosFiltrados.length > 0">
         <div class="user-list-header">
           <span class="user-column tipo"></span>
           <span class="user-column nombre">Nombre</span>
@@ -112,7 +118,7 @@
           <span class="user-column username">Nombre usuario</span>
           <span class="user-column tipo">Tipo de usuario</span>
         </div>
-        
+
         <!-- Lista de usuarios filtrada -->
         <ul>
           <li v-for="usuario in usuariosFiltrados" :key="usuario._id" class="user-item">
@@ -142,7 +148,7 @@ export default {
   name: 'CreacionUsuarios',
   data() {
     return {
-      filtroTipo: '', // Tipo de usuario seleccionado para el filtro
+      filtroTipo: '',
       usuarios: [],
       nuevoUsuario: {
         nombre: '',
@@ -159,7 +165,8 @@ export default {
         email: '',
       },
       departamentosDisponibles: [],
-      cargando: false, // Estado de carga para la lista de usuarios
+      cargando: false, // Estado de carga
+      errorServidor: false, // Estado de error
     };
   },
   computed: {
@@ -172,16 +179,19 @@ export default {
   },
   methods: {
     async obtenerUsuarios() {
-      this.cargando = true; // Inicia el indicador de carga
+      this.cargando = true;
+      this.errorServidor = false; // Reinicia el error antes de la solicitud
       try {
-        const response = await apiClient.get('/api/users');
+        const response = await apiClient.get('/api/usuarios');
         this.usuarios = response.data;
       } catch (error) {
         console.error('Error al obtener usuarios:', error);
+        this.errorServidor = true; // Activa el estado de error si la solicitud falla
       } finally {
-        this.cargando = false; // Finaliza el indicador de carga
-      }
-    },
+      this.cargando = false;
+    }
+  },
+
     filtrarUsuarios() {
       // Este método se llama cuando se cambia el filtro, pero el cálculo se realiza en `usuariosFiltrados`
     },
@@ -205,7 +215,7 @@ export default {
     },
     async crearUsuario() {
       try {
-        await apiClient.post('/api/users', this.nuevoUsuario);
+        await apiClient.post('/api/usuarios', this.nuevoUsuario);
         this.obtenerUsuarios();
         this.resetFormulario();
       } catch (error) {
@@ -240,7 +250,7 @@ export default {
     },
     async eliminarUsuario(id) {
       try {
-        await apiClient.delete(`/api/users/${id}`);
+        await apiClient.delete(`/api/usuarios/${id}`);
         this.obtenerUsuarios();
       } catch (error) {
         console.error('Error al eliminar usuario:', error);
@@ -248,7 +258,7 @@ export default {
     },
     async actualizarUsuario() {
       try {
-        await apiClient.put(`/api/users/${this.editarUsuarioId}`, this.nuevoUsuario);
+        await apiClient.put(`/api/usuarios/${this.editarUsuarioId}`, this.nuevoUsuario);
         this.obtenerUsuarios();
         this.resetFormulario();
         this.editarUsuarioId = null;
@@ -475,4 +485,12 @@ select:focus {
   border: 1px solid var(--color-gris);
 }
 
+.alerta-error {
+  background-color: #f44336 !important; /* Rojo claro personalizado */
+  color: white !important; /* Color de texto */
+}
+
+.alert-text {
+  margin-left: 20px; /* Ajusta el margen para aumentar la separación */
+}
 </style>
