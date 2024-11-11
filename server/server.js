@@ -21,7 +21,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const allowedOrigins = [
   'https://joyful-sopapillas-cb1211.netlify.app', // Reemplaza con la URL de tu sitio en Netlify
   'http://localhost:8080',                    // Para desarrollo local
-  'http://localhost:8081'   
+  'http://localhost:8081',
+  'https://sistema-gestor-hospitalario.onrender.com'   
 ];
 
 // Configura el middleware de CORS
