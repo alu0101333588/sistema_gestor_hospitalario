@@ -16,7 +16,6 @@ const userSchema = new mongoose.Schema({
   email: { type: String },
   fechaUltimoAcceso: { type: Date, default: null },
   estatus: { type: String, default: 'activo' },
-  foto: { type: String} // Ruta de la foto por defecto
 });
 
 // Aplica el plugin de autoincremento al esquema de usuario
