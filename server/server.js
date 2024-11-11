@@ -31,10 +31,11 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Origen no permitido por CORS'));
+      callback(new Error(`Origen no permitido por CORS: ${origin}`));
     }
   }
 }));
+
 
 // Middleware para procesar JSON en el cuerpo de las solicitudes
 app.use(express.json());
