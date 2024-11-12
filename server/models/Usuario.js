@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   tipo: { type: String, required: true },
-  departamento: { type: String },
+  departamento: { type: mongoose.Schema.Types.ObjectId, ref: 'Departamento' }, // Referencia al Departamento
   dni: { type: String },
   fechaNacimiento: { type: Date },
   genero: { type: String, enum: ['Masculino', 'Femenino'] },

@@ -1,6 +1,6 @@
 <template>
   <div class="error-container">
-    <img :src="require('@/assets/error_404.png')" alt="Error" class="error-image" />
+    <img :src="require('@/assets/estados/error_404.png')" alt="Error" class="error-image" />
     <h1>Página no encontrada</h1>
     <p>Lo sentimos, la página que estás buscando no existe</p>
     <v-btn class="btn-inicio" @click="volverAlInicio">Volver al inicio</v-btn>

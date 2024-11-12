@@ -2,10 +2,12 @@
     <div class="contenedor-principal">
       <!-- Columna izquierda: Formulario de creación de departamentos -->
       <div class="columna-formulario">
-        <h2>Gestión de Departamentos</h2>
+        <h2>Gestión de Especialidades médicas</h2>
   
         <!-- Formulario para crear o editar un departamento -->
         <form @submit.prevent="editarDepartamentoId ? actualizarDepartamento() : crearDepartamento()">
+          <img v-if="fotoPreview" :src="fotoPreview" alt="Previsualización de Foto de Perfil" class="foto-preview"/>
+
           <!-- Campo de Nombre -->
           <label>Nombre:
             <input type="text" v-model="nuevoDepartamento.nombre" required />
@@ -44,7 +46,7 @@
   
       <!-- Columna derecha: Lista de departamentos -->
       <div class="columna-lista">
-        <h3>Lista de Departamentos</h3>
+        <h3>Lista de Especialidades</h3>
   
         <!-- Indicador de error y carga -->
         <v-alert
@@ -70,20 +72,36 @@
           <p>La lista está vacía</p>
         </div>
   
+
+      
+
+
+
         <!-- Lista de departamentos -->
-        <ul v-if="!errorServidor">
-            <li v-for="departamento in departamentos" :key="departamento._id" class="user-item">
-            {{ departamento.codigo }} - {{ departamento.nombre }} (Operaciones: {{ departamento.operaciones.join(', ') }})
-    <div class="user-actions">
-      <v-btn class="boton-modificar ma-2" @click="cargarDepartamento(departamento)">
-        <i class="bi bi-pencil-square"></i>
-      </v-btn>
-      <v-btn class="ma-2 boton-eliminar" @click="confirmarEliminacion(departamento._id)">
-        <i class="bi bi-trash"></i>
-      </v-btn>
-    </div>
-  </li>
-</ul>
+        <!-- Tabla de departamentos -->
+  <table class="department-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Nombre</th>
+        <th>Operaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="departamento in departamentos" :key="departamento._id">
+        <td class="department-actions">
+          <v-btn class="boton-modificar" @click="cargarDepartamento(departamento)">
+            <i class="bi bi-pencil-square"></i>
+          </v-btn>
+          <v-btn class="boton-eliminar" @click="confirmarEliminacion(departamento._id, departamento.nombre)">
+            <i class="bi bi-trash"></i>
+          </v-btn>
+        </td>
+        <td>{{ departamento.nombre }}</td>
+        <td>{{ departamento.operaciones.join(', ') }}</td> <!-- Muestra las operaciones separadas por comas -->
+      </tr>
+    </tbody>
+  </table>
 
       </div>
     </div>
@@ -101,6 +119,7 @@
         nombre: '',
         operaciones: []
       },
+      fotoPreview: require('@/assets/estados/departamento_defecto.png'),
       operacionTemp: '', // Operación temporal
       editarDepartamentoId: null,
       cargando: false,
@@ -171,7 +190,9 @@
       resetFormulario() {
         this.nuevoDepartamento = { nombre: '', operaciones: [] };
         this.editarDepartamentoId = null;
-      }
+        this.fotoPreview = require('@/assets/estados/departamento_defecto.png');
+      },
+      
     },
     mounted() {
         this.obtenerDepartamentos();
@@ -301,6 +322,16 @@
     text-align: center;
   }
 
+  .foto-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 20%;
+  margin-top: 10px;
+  object-fit: cover;
+  margin-bottom: 30px;
+  align-self: center;
+}
+
   /* Estilo para los campos de entrada de texto, email y el selector */
 input[type="text"],
 input[type="email"],
@@ -320,5 +351,43 @@ select:focus {
   box-shadow: 0 0 5px var(--color-azul); /* Añade sombra al hacer foco */
   background-color: #C6DEFD; /* Mantiene el color de fondo al hacer foco */
 }
-  </style>
+
+.department-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.department-table th,
+.department-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.department-table tr {
+  margin: 0;
+  padding: 0;
+}
+
+.department-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.department-table td {
+  vertical-align: middle;
+}
+
+.department-actions {
+  display: flex;
+  gap: 5px; /* Espacio entre botones */
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+
+
+</style>
   

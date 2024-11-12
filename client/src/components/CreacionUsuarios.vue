@@ -31,7 +31,7 @@
         <label v-if="departamentosDisponibles.length > 0">
           Departamento:
           <select v-model="nuevoUsuario.departamento" required>
-            <option v-for="dep in departamentosDisponibles" :key="dep" :value="dep">{{ dep }}</option>
+            <option v-for="dep in departamentosDisponibles" :key="dep._id" :value="dep._id">{{ dep.nombre }}</option>
           </select>
         </label>
 
@@ -120,6 +120,7 @@
       <th>Nombre</th>
       <th>Username</th>
       <th>Tipo de usuario</th>
+      <th>Departamento</th>
     </tr>
   </thead>
   <tbody>
@@ -135,6 +136,8 @@
       <td>{{ usuario.nombre }} {{ usuario.apellidos }}</td>
       <td>{{ usuario.username }}</td>
       <td>{{ usuario.tipo }}</td>
+      <td>{{ obtenerNombreDepartamento(usuario.departamento) }}</td>
+
     </tr>
   </tbody>
 </table>
@@ -166,7 +169,7 @@ export default {
         email: '',
         foto: null 
       },
-      fotoPreview: require('@/assets/fotos_perfil/perfil_defecto.png'),
+      fotoPreview: require('@/assets/estados/perfil_defecto.png'),
       departamentosDisponibles: [],
       cargando: false, // Estado de carga
       errorServidor: false, // Estado de error
@@ -187,12 +190,28 @@ export default {
     try {
       const response = await apiClient.get('/api/usuarios');
       this.usuarios = response.data;
+      
+      // Llama a obtenerDepartamentos() cada vez que se actualizan los usuarios
+      await this.obtenerDepartamentos();
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
       this.errorServidor = true;
     } finally {
       this.cargando = false;
     }
+  },
+
+  async obtenerDepartamentos() {
+    try {
+      const response = await apiClient.get('/api/departamentos');
+      this.departamentosDisponibles = response.data;
+    } catch (error) {
+      console.error('Error al obtener departamentos:', error);
+    }
+  },
+  obtenerNombreDepartamento(departamentoId) {
+    const departamento = this.departamentosDisponibles.find(dep => dep._id === departamentoId);
+    return departamento ? departamento.nombre : '';
   },
 
   filtrarUsuarios() {
@@ -207,16 +226,14 @@ export default {
     }
   },
   actualizarOpcionesDepartamento() {
-      if (this.nuevoUsuario.tipo === 'Médico') {
-        this.departamentosDisponibles = ['Oncología', 'Pediatría', 'Medicina Interna', 'Cirugía General', 'Urgencias'];
-      } else if (this.nuevoUsuario.tipo === 'Administración') {
-        this.departamentosDisponibles = ['Call Center', 'Admisión'];
-      } else {
-        this.departamentosDisponibles = [];
-        this.nuevoUsuario.departamento = '';
-      }
-    },
-    async crearUsuario() {
+    if (this.nuevoUsuario.tipo === 'Médico') {
+      this.obtenerDepartamentos(); // Cargar departamentos desde el backend
+    } else {
+      this.departamentosDisponibles = [];
+      this.nuevoUsuario.departamento = '';
+    }
+  },
+  async crearUsuario() {
     const formData = new FormData();
     formData.append('nombre', this.nuevoUsuario.nombre);
     formData.append('apellidos', this.nuevoUsuario.apellidos);
@@ -264,7 +281,7 @@ export default {
       email: '',
       foto: null
     };
-    this.fotoPreview = require('@/assets/fotos_perfil/perfil_defecto.png');
+    this.fotoPreview = require('@/assets/estados/perfil_defecto.png');
     this.editarUsuarioId = null; // Salir del modo de edición
   },
   
@@ -274,53 +291,53 @@ export default {
   },
 
 
-    confirmarEliminacion(id, nombre) {
-      const confirmacion = window.confirm(`¿Está seguro de que desea eliminar el usuario ${nombre}?`);
-      if (confirmacion) {
-        this.eliminarUsuario(id);
-      }
-    },
-    async eliminarUsuario(id) {
-      try {
-        await apiClient.delete(`/api/usuarios/${id}`);
-        this.obtenerUsuarios();
-      } catch (error) {
-        console.error('Error al eliminar usuario:', error);
-      }
-    },
-    async actualizarUsuario() {
-      const formData = new FormData();
-      formData.append('nombre', this.nuevoUsuario.nombre);
-      formData.append('apellidos', this.nuevoUsuario.apellidos);
-      formData.append('username', this.nuevoUsuario.username);
-      formData.append('password', this.nuevoUsuario.password);
-      formData.append('tipo', this.nuevoUsuario.tipo);
-      formData.append('departamento', this.nuevoUsuario.departamento);
-      formData.append('dni', this.nuevoUsuario.dni);
+  confirmarEliminacion(id, nombre) {
+    const confirmacion = window.confirm(`¿Está seguro de que desea eliminar el usuario ${nombre}?`);
+    if (confirmacion) {
+      this.eliminarUsuario(id);
+    }
+  },
+  async eliminarUsuario(id) {
+    try {
+      await apiClient.delete(`/api/usuarios/${id}`);
+      this.obtenerUsuarios();
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+    }
+  },
+  async actualizarUsuario() {
+    const formData = new FormData();
+    formData.append('nombre', this.nuevoUsuario.nombre);
+    formData.append('apellidos', this.nuevoUsuario.apellidos);
+    formData.append('username', this.nuevoUsuario.username);
+    formData.append('password', this.nuevoUsuario.password);
+    formData.append('tipo', this.nuevoUsuario.tipo);
+    formData.append('departamento', this.nuevoUsuario.departamento);
+    formData.append('dni', this.nuevoUsuario.dni);
 
-      // Asegurar que `fechaNacimiento` sea `null` o un valor adecuado
+    // Asegurar que `fechaNacimiento` sea `null` o un valor adecuado
 
-      formData.append('genero', this.nuevoUsuario.genero);
-      formData.append('direccion', this.nuevoUsuario.direccion);
-      formData.append('telefono', this.nuevoUsuario.telefono);
-      formData.append('email', this.nuevoUsuario.email);
+    formData.append('genero', this.nuevoUsuario.genero);
+    formData.append('direccion', this.nuevoUsuario.direccion);
+    formData.append('telefono', this.nuevoUsuario.telefono);
+    formData.append('email', this.nuevoUsuario.email);
 
-      // Agregar la imagen solo si hay una nueva seleccionada
-      if (this.nuevoUsuario.foto && typeof this.nuevoUsuario.foto !== 'string') {
-        formData.append('foto', this.nuevoUsuario.foto);
-      }
+    // Agregar la imagen solo si hay una nueva seleccionada
+    if (this.nuevoUsuario.foto && typeof this.nuevoUsuario.foto !== 'string') {
+      formData.append('foto', this.nuevoUsuario.foto);
+    }
 
-      try {
-        await apiClient.put(`/api/usuarios/${this.editarUsuarioId}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        await this.obtenerUsuarios(); // Recargar la lista de usuarios
-        this.resetFormulario(); // Resetear el formulario después de la edición
-      }   catch (error) {
-        console.error('Error al actualizar usuario:', error);
-      }
+    try {
+      await apiClient.put(`/api/usuarios/${this.editarUsuarioId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      await this.obtenerUsuarios(); // Recargar la lista de usuarios
+      this.resetFormulario(); // Resetear el formulario después de la edición
+    }   catch (error) {
+      console.error('Error al actualizar usuario:', error);
+    }
   },
   cancelarEdicion() {
     this.resetFormulario();
@@ -330,7 +347,7 @@ export default {
     this.obtenerUsuarios();
     this.intervalId = setInterval(() => {
       this.obtenerUsuarios();
-    }, 10000);
+    }, 60000);
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
